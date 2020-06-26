@@ -7,15 +7,16 @@
  One of the main components of the userbot. """
 
 import sys
-from asyncio import create_subprocess_shell as asyncsubshell
+from asyncio import create_subprocess_exec as asyncsubshell
 from asyncio import subprocess as asyncsub
 from os import remove
 from time import gmtime, strftime
 from traceback import format_exc
 
 from telethon import events
+from telethon.tl.types import ChannelParticipantsAdmins
 
-from userbot import bot, BOTLOG_CHATID, LOGSPAMMER
+from userbot import bot, BOTLOG, BOTLOG_CHATID, LOGSPAMMER
 
 
 def register(**args):
@@ -26,7 +27,9 @@ def register(**args):
     unsafe_pattern = r'^[^/!#@\$A-Za-z]'
     groups_only = args.get('groups_only', False)
     trigger_on_fwd = args.get('trigger_on_fwd', False)
+    trigger_on_inline = args.get('trigger_on_inline', False)
     disable_errors = args.get('disable_errors', False)
+    insecure = args.get('insecure', False)
 
     if pattern is not None and not pattern.startswith('(?i)'):
         args['pattern'] = '(?i)' + pattern
@@ -45,6 +48,12 @@ def register(**args):
 
     if "trigger_on_fwd" in args:
         del args['trigger_on_fwd']
+      
+    if "trigger_on_inline" in args:
+        del args['trigger_on_inline']
+      
+    if "insecure" in args:
+        del args['insecure']
 
     if pattern:
         if not ignore_unsafe:
@@ -52,6 +61,18 @@ def register(**args):
 
     def decorator(func):
         async def wrapper(check):
+            if check.edit_date and check.is_channel and not check.is_group:
+                # Messages sent in channels can be edited by other users.
+                # Ignore edits that take place in channels.
+                return
+                       
+            #if check.via_bot_id and not trigger_on_inline:
+             #   return
+             
+            if check.via_bot_id and not insecure and check.out:
+                # Ignore outgoing messages via inline bots for security reasons
+                return
+       
             if not LOGSPAMMER:
                 send_to = check.chat_id
             else:
@@ -60,6 +81,7 @@ def register(**args):
             if not trigger_on_fwd and check.fwd_from:
                 return
 
+           
             if groups_only and not check.is_group:
                 await check.respond("`I don't think this is a group.`")
                 return
@@ -128,10 +150,8 @@ def register(**args):
                     file.close()
 
                     if LOGSPAMMER:
-                        await check.client.respond(
-                            "`Sorry, my userbot has crashed.\
-                        \nThe error logs are stored in the userbot's log chat.`"
-                        )
+                        await check.client.respond("`Sorry, my userbot has crashed.\
+                        \nThe error logs are stored in the userbot's log chat.`")
 
                     await check.client.send_file(send_to,
                                                  "error.log",

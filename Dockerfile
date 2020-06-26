@@ -41,20 +41,25 @@ RUN apk add --no-cache=true --update \
     pv \
     jq \
     wget \
-    python \
-    python-dev \
+    freetype \
+    freetype-dev \
     python3 \
     python3-dev \
     readline-dev \
     sqlite \
     ffmpeg \
+    w3m \
+    libjpeg-turbo-dev \
     sqlite-dev \
+    libc-dev \
     sudo \
     chromium \
     chromium-chromedriver \
     zlib-dev \
-    jpeg
+    jpeg 
+    #
 
+RUN curl https://cli-assets.heroku.com/install.sh
 
 RUN python3 -m ensurepip \
     && pip3 install --upgrade pip setuptools \
@@ -63,13 +68,18 @@ RUN python3 -m ensurepip \
     if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
     rm -r /root/.cache
 
+
+
+
 #
 # Clone repo and prepare working directory
 #
-RUN git clone -b latest https://github.com/Aoihara/OpenUserBot /root/userbot
-RUN mkdir /root/userbot/bin/
-WORKDIR /root/userbot/
 
+RUN git clone -b latest https://github.com/Aoihara/OpenUserBot /root/userbot
+RUN mkdir /root/userbot/.bin
+WORKDIR /root/userbot/
+ENV PATH="/root/userbot/.bin:$PATH"
+WORKDIR /root/userbot/
 #
 # Copies session and config (if it exists)
 #
@@ -80,3 +90,5 @@ COPY ./sample_config.env ./userbot.session* ./config.env* /root/userbot/
 #
 RUN pip3 install -r requirements.txt
 CMD ["python3","-m","userbot"]
+
+

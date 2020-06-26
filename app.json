@@ -1,6 +1,6 @@
 {
   "name": "Telegram Open User Bot",
-  "description": "[OpenUserBot] A modular Telegram userbot running on Python 3.7+ with an sqlalchemy database.",
+  "description": "[OpenUserBot] A modular Telegram userbot running on Python 3.7+ with an sqlalchemy database, which can be coupled up with Mongo DB and a Redis backend",
   "logo": "https://telegra.ph/file/d04a1724c6dd8a957bd0e.png",
   "keywords": [
     "telegram",
@@ -22,6 +22,24 @@
       "description": "Get this value from my.telegram.org.",
       "required": true
     },
+    "API_TOKEN": {
+      "description": "Get this value from http://antiddos.systems! Please do not steal",
+      "value": "",
+      "required": false
+    },
+    "API_URL": {
+      "description": "The value is http://antiddos.systems!",
+      "value": "http://antiddos.systems",
+      "required": false
+    },
+    "NC_LOG_P_M_S": {
+      "description": "set to True if you want to log PMs to your PM_LOGGR_BOT_API_ID",
+      "required": false
+    },
+    "PM_LOGGR_BOT_API_ID": {
+      "description": "send .chatid in any channel to forward all your NEW PMs to this group",
+      "required": false
+    },
     "STRING_SESSION": {
       "description": "Get this value by running [python3 string_session.py] in Termux or local system.",
       "required": true
@@ -29,6 +47,10 @@
     "GENIUS_API_TOKEN": {
       "description": "Get this value from https://genius.com/developers.",
       "value": "0"
+    },
+    "MONGO_URI": {
+      "description": "Your MongoDB Atlas URL, Get your guide from https://telegra.ph/Mongo-DB-12-24.",
+      "required": false 
     },
     "GENIUS": {
       "description": "Get this value from https://genius.com/developers., basically same as GENIUS_API_TOKEN.",
@@ -122,6 +144,10 @@
       "description": "Download location for many modules (GDrive, .download etc..)",
       "value": "./downloads/"
     },
+    "TELEGRAPH_SHORT_NAME": {
+      "description": "add your desired TELEGRAPH_SHORT_NAME.",
+      "value": "@Mayur_Karaniya"
+    },
     "CLEAN_WELCOME": {
       "description": "When a new person joins, the old welcome message is deleted.",
       "value": "True"
@@ -129,6 +155,10 @@
     "G_DRIVE_CLIENT_ID": {
       "description": "Enter Your Client ID for Google Drive.",
       "required": false
+    },
+    "GDRIVE_FOLDER_ID": {
+            "description": "Google Drive upload folder.",
+            "required": false
     },
     "LASTFM_API": {
       "description": "API Key for Last.FM module. [Get one from - https://www.last.fm/api/account/create]",
@@ -192,5 +222,21 @@
         "version": "12"
       }
     }
-  ]
+  ],"buildpacks": [{
+    "url": "https://github.com/heroku/heroku-buildpack-python.git"
+  }, {
+    "url": "https://github.com/heroku/heroku-buildpack-redis"
+  }, {
+    "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+  }, {
+    "url": "https://github.com/HasibulKabir/heroku-buildpack-rarlab"
+  },{
+    "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+  }, {
+    "url": "https://github.com/opendoor-labs/heroku-buildpack-p7zip"
+  }, {
+    "url": "https://github.com/amivin/aria2-heroku"
+  }, {
+    "url": "https://github.com/stevo550/buildpack-slug-cleaner"
+  }]
 }
